@@ -226,3 +226,117 @@ url: https://api.context7.com/...
 - **Mock API**: A mock API should be available for testing purposes
 - **Test Scenarios**: Should include network failures, API errors, cache behavior, and all command variations
 
+## Future Enhancements
+
+The following features are documented for future consideration but not required for the initial release:
+
+### Query Normalization (Cache Hit Improvement)
+
+Currently, cache keys include the full query string, meaning slight variations result in cache misses:
+- `context7 doc react "using effects"` vs `context7 doc react "use effects"` → separate cache entries
+
+**Potential implementations:**
+
+1. **Basic normalization**: Lowercase, trim whitespace, remove punctuation, sort words alphabetically
+   - Pros: Simple, predictable
+   - Cons: May be too aggressive; "React hooks" vs "hooks React" might have different semantic meanings
+
+2. **Cache by library only**: Ignore query parameter in cache key
+   - Pros: Maximum cache hits
+   - Cons: Defeats the purpose of targeted queries; wrong results possible
+
+3. **Fuzzy matching with similarity threshold**: Store recent queries in an index, check similarity (Levenshtein distance, word overlap)
+   - Pros: Smart, context-aware
+   - Cons: Complex, slower, may give incorrect results
+
+4. **Current approach (v1)**: Include full query in hash, accept cache misses
+   - Pros: Always correct results, simple implementation
+   - Cons: Lower cache hit rate for similar queries
+
+**Recommendation**: Start with option 4 (current), gather real-world usage data, then consider normalization if cache miss rate is problematic.
+
+### GPG-Encrypted Authentication Files
+
+Support for GPG-encrypted credential files:
+- `.authinfo.gpg`
+- `.netrc.gpg`
+
+**Requirements:**
+- Detect `.gpg` extension
+- Shell out to `gpg --decrypt` or use a GPG library
+- Parse decrypted content using existing authinfo/netrc parser
+
+**Security considerations:**
+- Ensure GPG agent is running (for passphrase)
+- Handle decryption errors gracefully
+- Don't cache decrypted credentials in memory longer than necessary
+
+### Shell Completion Scripts
+
+Generate completion scripts for popular shells:
+- Bash: `/etc/bash_completion.d/context7`
+- Zsh: `_context7` function
+- Fish: `context7.fish`
+
+Could add a `context7 completion <shell>` command to output the appropriate script.
+
+### Performance Benchmarking
+
+Establish performance baseline and monitor regressions:
+- Startup time (cold start)
+- Time to first byte for API requests
+- Cache read/write performance
+- Memory usage
+- Binary size over time
+
+### Integration Tests with Live API
+
+Current test suite uses a mock API. Add optional integration tests:
+- Require `CONTEXT7_API_KEY` environment variable
+- Test against real Context7 API
+- Run in CI only on tagged releases (to avoid rate limits)
+- Verify end-to-end behavior including caching
+
+### Additional Output Formats
+
+Consider supporting:
+- **Plain text** (no Markdown formatting)
+- **HTML** (for browser viewing)
+- **XML** (for integration with other tools)
+
+### Enhanced Verbose Mode
+
+Add more detailed diagnostics:
+- Request/response headers
+- Body preview (first N bytes)
+- Timing information (DNS lookup, TLS handshake, TTFB, total)
+- Cache hit/miss statistics
+
+### Configuration Profiles
+
+Support multiple named configurations:
+```json
+{
+  "profiles": {
+    "production": {
+      "api_key": "prod-key",
+      "base_url": "https://api.context7.com"
+    },
+    "staging": {
+      "api_key": "staging-key",
+      "base_url": "https://staging-api.context7.com"
+    }
+  }
+}
+```
+
+Use with `--profile staging` flag.
+
+### Cache Management Commands
+
+Add cache inspection and management:
+- `context7 cache list` - Show cached entries
+- `context7 cache clear` - Clear all cache
+- `context7 cache prune` - Remove expired entries
+- `context7 cache stats` - Show hit rate, size, etc.
+

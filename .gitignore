@@ -1,0 +1,31 @@
+# Nim compiler output
+nimcache/
+nimblecache/
+htmldocs/
+
+# Binaries
+context7
+src/context7
+bin/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test output
+tests/output/
+
+# Cache
+.cache/
