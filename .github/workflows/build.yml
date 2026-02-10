@@ -2,10 +2,10 @@ name: Build and Release
 
 on:
   push:
-    branches: [ main, master ]
-    tags: [ 'v*' ]
+    branches: [main, master]
+    tags: ["v*"]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
@@ -17,16 +17,16 @@ jobs:
       - name: Install Nim
         uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: '2.0.x'
+          nim-version: "2.0"
 
       - name: Build
-        run: nim c src/context7.nim
+        run: make
 
       - name: Run tests
-        run: nim c -r tests/test_basic.nim
+        run: make test
 
   build:
-    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+    name: Build matrix
     needs: test
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -55,13 +55,10 @@ jobs:
       - name: Install Nim
         uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: '2.0.x'
+          nim-version: "2.0"
 
       - name: Build release binary
-        run: |
-          nim c -d:release --opt:size -o:context7 src/context7.nim
-          strip context7 || true
-          chmod +x context7
+        run: make build-release && chmod +x context7
 
       - name: Test binary
         run: ./context7 version
