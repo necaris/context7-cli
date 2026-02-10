@@ -1,14 +1,18 @@
-.PHONY: build build-release clean test install lint
+.PHONY: build build-release clean test install lint deps
 
 TEST_FILES := $(wildcard tests/test_*.nim)
 .PHONY: $(TEST_FILES)
 
+# Install nimble dependencies
+deps:
+	nimble install -d -y
+
 # Build debug version
-build:
+build: deps
 	nim c -d:ssl -o:context7 src/context7.nim
 
 # Build optimized release version
-build-release:
+build-release: deps
 	nim c -d:release -d:ssl --opt:size -o:context7 src/context7.nim && strip context7
 
 # Clean build artifacts
@@ -17,7 +21,7 @@ clean:
 	rm -rf nimcache/ src/nimcache/
 
 # Run tests
-test: $(TEST_FILES)
+test: deps $(TEST_FILES)
 $(TEST_FILES):
 	nim c -r $@
 
