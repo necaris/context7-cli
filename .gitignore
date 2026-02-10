@@ -7,6 +7,7 @@ htmldocs/
 context7
 src/context7
 bin/
+*.out
 
 # Build artifacts
 *.o
@@ -15,6 +16,10 @@ bin/
 *.dylib
 *.dll
 *.exe
+
+# Nimble
+nimble.develop
+nimble.paths
 
 # IDE and editor files
 .vscode/

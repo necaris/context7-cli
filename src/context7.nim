@@ -49,10 +49,24 @@ proc parseArgs(): CommandOpts =
     longNoVal = @["no-cache", "refresh-cache", "verbose", "version", "help"]
   )
 
-  # First arg is command
+  # First arg is command (or --version/--help flag)
   parser.next()
   if parser.kind == cmdArgument:
     result.command = parser.key
+  elif parser.kind in {cmdShortOption, cmdLongOption}:
+    case parser.key
+    of "version":
+      showVersion()
+      quit(0)
+    of "help", "h":
+      echo "Usage: context7 <command> [options]"
+      echo "Run 'context7 intro' for usage guide"
+      quit(0)
+    of "verbose", "v":
+      result.verbose = true
+    else:
+      echo "Usage: context7 <command> [options]"
+      quit(1)
   else:
     echo "Usage: context7 <command> [options]"
     quit(1)
@@ -87,6 +101,13 @@ proc parseArgs(): CommandOpts =
         result.refreshCache = true
       of "verbose", "v":
         result.verbose = true
+      of "version":
+        showVersion()
+        quit(0)
+      of "help", "h":
+        echo "Usage: context7 <command> [options]"
+        echo "Run 'context7 intro' for usage guide"
+        quit(0)
       else:
         stderr.writeLine("Unknown option: " & parser.key)
         quit(1)
