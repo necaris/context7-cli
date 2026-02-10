@@ -17,7 +17,7 @@ jobs:
       - name: Install Nim
         uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: "2.0"
+          nim-version: "stable"
 
       - name: Build
         run: make
@@ -35,19 +35,15 @@ jobs:
           - os: linux
             arch: x86_64
             runner: ubuntu-latest
-            nim-arch: amd64
           - os: linux
             arch: arm64
-            runner: ubuntu-latest
-            nim-arch: arm64
+            runner: ubuntu-24.04-arm
           - os: macos
             arch: x86_64
             runner: macos-13
-            nim-arch: amd64
           - os: macos
             arch: arm64
             runner: macos-14
-            nim-arch: arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +51,7 @@ jobs:
       - name: Install Nim
         uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: "2.0"
+          nim-version: "stable"
 
       - name: Build release binary
         run: make build-release && chmod +x context7
