@@ -41,7 +41,7 @@ type
     verbose: bool
 
 proc parseArgs(): CommandOpts =
-  result.format = fmtText  # Default format
+  result.format = fmtText # Default format
   result.args = @[]
 
   var parser = initOptParser(

@@ -3,7 +3,7 @@
 ## Extracted from commands.nim to eliminate duplication between
 ## `search`, `doc`, and test helpers.
 
-import std/[json, strutils, strformat]
+import std/[json, strutils, strformat, unicode]
 
 proc parseSearchResults*(body: string): JsonNode =
   ## Parse API response, handling both {"results":[...]} and [...] forms.
@@ -19,8 +19,8 @@ proc parseSearchResults*(body: string): JsonNode =
 
 proc truncateDesc*(desc: string, maxLen = 60): string =
   ## Truncate description with "..." suffix.
-  if desc.len > maxLen:
-    desc[0 .. (maxLen - 4)] & "..."
+  if desc.runeLen > maxLen:
+    desc.runeSubStr(0, maxLen - 4) & "..."
   else:
     desc
 

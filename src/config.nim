@@ -5,31 +5,52 @@ import std/[os, json, strutils]
 const DefaultBaseUrl* = "https://context7.com"
 
 proc stripJsonComments(content: string): string =
-  ## Remove // and /* */ comments from JSON content
+  ## Remove // and /* */ comments from JSON content, respecting strings
   result = ""
   var i = 0
+  var inString = false
+  
   while i < content.len:
-    if i < content.len - 1:
-      # Handle // comments
-      if content[i] == '/' and content[i+1] == '/':
-        # Skip until end of line
-        inc i, 2
-        while i < content.len and content[i] != '\n':
-          inc i
-        continue
+    let c = content[i]
+    
+    if not inString:
+      if i < content.len - 1:
+        # Handle // comments
+        if c == '/' and content[i+1] == '/':
+          # Skip until end of line
+          inc i, 2
+          while i < content.len and content[i] != '\n':
+            inc i
+          continue
 
-      # Handle /* */ comments
-      if content[i] == '/' and content[i+1] == '*':
-        inc i, 2
-        # Skip until */
-        while i < content.len - 1:
-          if content[i] == '*' and content[i+1] == '/':
-            inc i, 2
-            break
-          inc i
-        continue
-
-    result.add(content[i])
+        # Handle /* */ comments
+        if c == '/' and content[i+1] == '*':
+          inc i, 2
+          # Skip until */
+          while i < content.len - 1:
+            if content[i] == '*' and content[i+1] == '/':
+              inc i, 2
+              break
+            inc i
+          continue
+    
+    # Check for string start/end
+    # Note: simplified handling of escaped quotes, assuming valid JSON
+    if c == '"':
+      var isEscaped = false
+      if i > 0:
+        var backslashCount = 0
+        var j = i - 1
+        while j >= 0 and content[j] == '\\':
+          inc backslashCount
+          dec j
+        if backslashCount mod 2 != 0:
+          isEscaped = true
+      
+      if not isEscaped:
+        inString = not inString
+    
+    result.add(c)
     inc i
 
 proc getConfigPath*(): string =

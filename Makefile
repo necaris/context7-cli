@@ -1,4 +1,4 @@
-.PHONY: build build-release clean test install
+.PHONY: build build-release clean test install lint
 
 TEST_FILES := $(wildcard tests/test_*.nim)
 .PHONY: $(TEST_FILES)
@@ -20,6 +20,10 @@ clean:
 test: $(TEST_FILES)
 $(TEST_FILES):
 	nim c -r $@
+
+# Lint the project
+lint:
+	nim check src/context7.nim
 
 # Install to /usr/local/bin
 install: build-release
