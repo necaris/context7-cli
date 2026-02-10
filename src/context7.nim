@@ -2,8 +2,8 @@
 ##
 ## Tool for AI agents to retrieve library documentation via Context7.com API
 
-import std/[strutils, os, parseopt, tables]
-import types, config, commands
+import std/[os, parseopt]
+import types, commands
 
 const Version = "0.1.0"
 

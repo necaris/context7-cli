@@ -1,7 +1,7 @@
 ## Cache management for API responses
 
-import std/[os, times, strutils, tables, uri, algorithm]
-import std/sha1
+import std/[os, times, strutils, tables, algorithm]
+import checksums/sha1
 import config
 
 type
