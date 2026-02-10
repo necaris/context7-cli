@@ -80,7 +80,7 @@ proc makeRequest*(endpoint: string, params: Table[string, string],
     if resp.status == 200:
       result = ApiResponse(status: resp.status, body: resp.body, fromCache: false)
       if not noCache:
-        let ttl = getTtlForEndpoint(endpoint)
+        let ttl = getTtlForEndpoint(endpoint, configFile)
         writeCache(endpoint, params, resp.status, urlStr, resp.body, ttl)
       return result
     else:
@@ -119,7 +119,7 @@ proc makeRequest*(endpoint: string, params: Table[string, string],
 
         # Write to cache (unless noCache)
         if not noCache:
-          let ttl = getTtlForEndpoint(endpoint)
+          let ttl = getTtlForEndpoint(endpoint, configFile)
           writeCache(endpoint, params, status, urlStr, body, ttl)
 
         return result

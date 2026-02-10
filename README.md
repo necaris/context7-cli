@@ -66,7 +66,9 @@ context7 get /facebook/react --query "hooks best practices"
 {
   "api_key": "your-api-key-here",
   "cache_dir": "/custom/cache/path",
-  "base_url": "https://custom-api.example.com"
+  "base_url": "https://custom-api.example.com",
+  "search_ttl": 21600,
+  "context_ttl": 86400
 }
 ```
 
@@ -74,7 +76,7 @@ Comments (`//` and `/* */`) are supported.
 
 ### Cache
 
-Responses are cached to disk (`$CONTEXT7_CACHE` > `$XDG_CACHE_HOME/context7/` > `~/.cache/context7/`). Search results expire after 24 hours, context results after 1 hour.
+Responses are cached to disk (`$CONTEXT7_CACHE` > `$XDG_CACHE_HOME/context7/` > `~/.cache/context7/`). Search results expire after 6 hours, context results after 24 hours. Override via config file (`search_ttl` / `context_ttl` keys, in seconds) or env vars (`CONTEXT7_SEARCH_TTL` / `CONTEXT7_CONTEXT_TTL`). Env vars take priority over config file.
 
 ## Development
 

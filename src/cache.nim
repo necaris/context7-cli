@@ -1,6 +1,6 @@
 ## Cache management for API responses
 
-import std/[os, times, strutils, tables, algorithm]
+import std/[os, times, strutils, tables, algorithm, json]
 import checksums/sha1
 import config
 
@@ -120,11 +120,29 @@ proc writeCache*(endpoint: string, params: Table[string, string],
     # Fail silently - caching is optional
     discard
 
-proc getTtlForEndpoint*(endpoint: string): int =
-  ## Get TTL in seconds based on endpoint
+proc getTtlForEndpoint*(endpoint: string, config: JsonNode = nil): int =
+  ## Get TTL in seconds based on endpoint.
+  ## Priority: env var > config file > built-in default.
+  ## Env vars: CONTEXT7_SEARCH_TTL / CONTEXT7_CONTEXT_TTL (seconds).
+  ## Config keys: search_ttl / context_ttl (seconds).
+  ## AIDEV-NOTE: Aggressive caching — docs rarely change within a day
   if endpoint.contains("/api/v2/libs/search"):
-    return 24 * 60 * 60  # 24 hours
+    let envTtl = getEnv("CONTEXT7_SEARCH_TTL")
+    if envTtl.len > 0:
+      try: return parseInt(envTtl)
+      except: discard
+    if config != nil and config.hasKey("search_ttl"):
+      try: return config["search_ttl"].getInt()
+      except: discard
+    return 6 * 60 * 60  # 6 hours
   elif endpoint.contains("/api/v2/context"):
-    return 60 * 60  # 1 hour
+    let envTtl = getEnv("CONTEXT7_CONTEXT_TTL")
+    if envTtl.len > 0:
+      try: return parseInt(envTtl)
+      except: discard
+    if config != nil and config.hasKey("context_ttl"):
+      try: return config["context_ttl"].getInt()
+      except: discard
+    return 24 * 60 * 60  # 24 hours
   else:
-    return 60 * 60  # Default 1 hour
+    return 24 * 60 * 60  # Default 24 hours

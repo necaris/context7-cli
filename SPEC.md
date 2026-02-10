@@ -116,7 +116,9 @@ If none found, exit with a clear error message.
   // Context7 CLI configuration
   "api_key": "...",  // Your Context7 API key
   "cache_dir": "...", // Custom cache directory (optional)
-  "base_url": "..."   // Custom base URL for testing (optional)
+  "base_url": "...",     // Custom base URL for testing (optional)
+  "search_ttl": 21600,   // Search cache TTL in seconds (default: 6 hours)
+  "context_ttl": 86400   // Context cache TTL in seconds (default: 24 hours)
 }
 ```
 
@@ -170,9 +172,9 @@ Cache API responses to disk to reduce redundant calls.
 - **Filename:** `<sha256-hash>.cache` where hash is computed from `(endpoint, sorted query params)`
   - Example: SHA-256 of `/api/v2/context?libraryId=/facebook/react&query=useEffect&type=json`
   - Filesystem-safe conversion: Replace `/` with `_` in parameter values before hashing
-- **TTL:**
-  - Search results (`/api/v2/libs/search`): 24 hours
-  - Context results (`/api/v2/context`): 1 hour
+- **TTL** (configurable via config file keys `search_ttl`/`context_ttl` or env vars `CONTEXT7_SEARCH_TTL`/`CONTEXT7_CONTEXT_TTL`; env vars take priority):
+  - Search results (`/api/v2/libs/search`): 6 hours (21600s)
+  - Context results (`/api/v2/context`): 24 hours (86400s)
 - **Query handling:** Cache key includes the full query string. This means:
   - `context7 doc react "using effects"` and `context7 doc react "use effects"` will result in separate cache entries
   - This ensures correct results at the cost of potential cache misses for similar queries
@@ -188,7 +190,7 @@ Cache API responses to disk to reduce redundant calls.
 ```
 nim-context7-cache: v1
 timestamp: 1707465600
-ttl: 3600
+ttl: 86400
 status: 200
 url: https://api.context7.com/...
 
