@@ -60,7 +60,7 @@ proc parseArgs(): CommandOpts =
       quit(0)
     of "help", "h":
       echo "Usage: context7 <command> [options]"
-      echo "Run 'context7 intro' for usage guide"
+      echo "Run 'context7 quickstart' or 'context7 intro' for usage guide"
       quit(0)
     of "verbose", "v":
       result.verbose = true
@@ -106,7 +106,7 @@ proc parseArgs(): CommandOpts =
         quit(0)
       of "help", "h":
         echo "Usage: context7 <command> [options]"
-        echo "Run 'context7 intro' for usage guide"
+        echo "Run 'context7 quickstart' or 'context7 intro' for usage guide"
         quit(0)
       else:
         stderr.writeLine("Unknown option: " & parser.key)
@@ -126,6 +126,8 @@ proc main() =
   of "version":
     showVersion()
   of "intro":
+    showIntro()
+  of "quickstart":
     showIntro()
   of "search":
     if opts.args.len == 0:
